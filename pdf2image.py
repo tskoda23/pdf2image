@@ -1,19 +1,18 @@
 import os
 import sys
-import PythonMagick
+from pgmagick import Image
 from pptx import Presentation
 from pptx.util import Inches
 from PyPDF2 import PdfFileWriter, PdfFileReader
-from logger import Logger
-
+import logging
 
 class PdfToPpt(object):
     def __init__(self, pdf_file=None, ppt_file=None):
         self.pdf_file = pdf_file
         self.ppt_file = pdf_file.replace('.pdf', '.pptx')
-	self.total_pages = 1
-        self.log = Logger.defaults('PdfToPptx')
-        self.log.debug('%s \n %s' % (self.pdf_file, self.ppt_file))
+        self.total_pages = 1    
+        self.log = logging.getLogger('PdfToPptx')
+        self.log.debug('{} \n {}'.format(self.pdf_file, self.ppt_file))
 
     def check_file_exist(self, file_path):
         self.log.info('Checking file - %s ' % file_path)
@@ -24,24 +23,24 @@ class PdfToPpt(object):
 
     def pdf_to_image(self, pdf_file):
         if not self.check_file_exist(pdf_file):
-            self.log.debug('Requested file not found in %s ' % pdf_file)
+            self.log.debug('Requested file not found in {} '.format(pdf_file))
             return False
         image_file = pdf_file.replace('.pdf', '.jpg')
         try:
-            pdf_to_img = PythonMagick.Image()
+            pdf_to_img = Image()
             pdf_to_img.density('200')
             pdf_to_img.read(pdf_file)
             pdf_to_img.write(image_file)
-            self.log.info('Image convert passed - %s ' % image_file)
+            self.log.info('Image convert passed - {} '.format(image_file))
             return True
         except Exception:
-            self.log.debug('Image convert failed - %s ' % image_file)
+            self.log.error('Image convert failed - {} '.format(image_file))
             self.log.error('', exc_info=True)
             return False
 
     def pdf_splitter(self):
         self.log.info('Called pdf_splitter')
-        input_pdf = PdfFileReader(file(self.pdf_file, 'rb'))
+        input_pdf = PdfFileReader(open(self.pdf_file, 'rb'), strict=False)
         self.total_pages = input_pdf.numPages
 
         for page_number in range(self.total_pages):
@@ -50,7 +49,7 @@ class PdfToPpt(object):
             # new filename
             new_pdf = '_%s%s' % (str(page_number+1), '.pdf')
             new_pdf = self.pdf_file.replace('.pdf', new_pdf)
-            file_stream = file(new_pdf, 'wb')
+            file_stream = open(new_pdf, 'wb')
             output.write(file_stream)
             file_stream.close()
 
@@ -81,9 +80,27 @@ class PdfToPpt(object):
         self.pdf_splitter()
         self.create_ppt()
         self.log.info('Done ppt conversion')
+  
 
 
 if __name__ == '__main__':
-     run_time = sys.argv[1:]
-     PdfToPpt(pdf_file=run_time[0]).execute()
+    directory = sys.argv[1]
+    file_list = (f for f in os.listdir(directory) if f.endswith('.' + 'pdf'))
+    output_directory = '{}\{}'.format(directory, 'OUT') 
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+    
+    # for file in file_list:
+    #     full_name = '{}\{}'.format(directory, file)
+    #     PdfToPpt(pdf_file=full_name).execute()
 
+
+    image_list = (f for f in os.listdir(directory) if f.endswith('.' + 'jpg'))
+    for image in image_list:
+        full_name = '{}\{}'.format(directory, image)
+
+        real_image = Image(full_name)
+        real_image.quality(10)
+        real_image.write(full_name)
+        command = 'img2pdf -o {}\{} {}'.format(output_directory, image.replace("_1.jpg", ".pdf"), full_name)
+        os.system(command)

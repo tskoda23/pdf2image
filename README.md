@@ -1,13 +1,15 @@
-# pdf to pptx using python
+### Windows
+Install GraphicsMagick
+	https://sourceforge.net/projects/graphicsmagick/files/graphicsmagick-binaries/
 
-## Written in PYTHON 2.7 
+Install pgmagick whl with pip
+	https://www.lfd.uci.edu/~gohlke/pythonlibs/#pgmagick
+	pip install downloaddedwhlpackage.whl //32 bit 64 bit depending on python version you installed
 
-cd ppt-pdf/
 
-python   cli_pdf_to_ppt.py   a.pdf
+install ghostscript
+	https://www.ghostscript.com/download/gsdnld.html
 
-output file will be created as a.pptx in the same location
-
-# Make sure you have installed the required packages 
-
-# tested in ubuntu 14 (Linux)
+and
+	pip install python-pptx
+	pip install PyPDF2
