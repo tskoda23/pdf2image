@@ -1,15 +1,10 @@
-### Windows
-Install GraphicsMagick
-	https://sourceforge.net/projects/graphicsmagick/files/graphicsmagick-binaries/
+# pdf2image
 
-Install pgmagick whl with pip
-	https://www.lfd.uci.edu/~gohlke/pythonlibs/#pgmagick
-	pip install downloaddedwhlpackage.whl //32 bit 64 bit depending on python version you installed
+Convert pdf to image, power point presentation or to optimised pdf
 
-
-install ghostscript
-	https://www.ghostscript.com/download/gsdnld.html
-
-and
-	pip install python-pptx
-	pip install PyPDF2
+### Requirements
+- GraphicsMagick
+- pgmagick
+- ghostscript
+- python-pptx
+- PyPDF2

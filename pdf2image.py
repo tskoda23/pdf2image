@@ -85,14 +85,15 @@ class PdfToPpt(object):
 
 if __name__ == '__main__':
     directory = sys.argv[1]
+    quality = int(sys.argv[2])
     file_list = (f for f in os.listdir(directory) if f.endswith('.' + 'pdf'))
     output_directory = '{}\{}'.format(directory, 'OUT') 
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
     
-    # for file in file_list:
-    #     full_name = '{}\{}'.format(directory, file)
-    #     PdfToPpt(pdf_file=full_name).execute()
+    for file in file_list:
+        full_name = '{}\{}'.format(directory, file)
+        PdfToPpt(pdf_file=full_name).execute()
 
 
     image_list = (f for f in os.listdir(directory) if f.endswith('.' + 'jpg'))
@@ -100,7 +101,7 @@ if __name__ == '__main__':
         full_name = '{}\{}'.format(directory, image)
 
         real_image = Image(full_name)
-        real_image.quality(10)
+        real_image.quality(quality)
         real_image.write(full_name)
         command = 'img2pdf -o {}\{} {}'.format(output_directory, image.replace("_1.jpg", ".pdf"), full_name)
         os.system(command)
